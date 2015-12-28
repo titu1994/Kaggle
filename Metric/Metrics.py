@@ -6,31 +6,84 @@ import ml_metrics as mlmetrics
 
 
 def rmse(yTrue, yPredicted):
+    """
+    Calculates Root Mean Squared Error
+
+    :param yTrue: list (int, float)
+    :param yPredicted: list (int, float)
+    :return: RMSE score
+    """
     return metrics.mean_squared_error(yTrue, yPredicted)**0.5
 
 def nrmse(yTrue, yPredicted):
+    """
+    Calculates Normalized Root Mean Squared Error
+
+    :param yTrue: list (int, float)
+    :param yPredicted: list (int, float)
+    :return: Normalized RMSE score
+    """
     return rmse(yTrue, yPredicted) / (max(yTrue) - min(yTrue))
 
 def rmsle(y, y_pred):
+    """
+    Calculate Root Mean Squared Logarithmic Error
+
+    :param y: list (int, float)
+    :param y_pred: list (int, float)
+    :return: RMSLE score
+    """
     terms_to_sum = [(math.log(y_pred[i] + 1) - math.log(y[i] + 1)) ** 2.0 for i,pred in enumerate(y_pred)]
     return (sum(terms_to_sum) * (1.0/len(y))) ** 0.5
 
 def rmsle2(y, ypred):
+    """
+    Calculate Root Mean Squared Logarithmic Error/
+    Note : Uses external library - ml_metrics - which is more stable than above version
+
+    :param y: list (int, float)
+    :param y_pred: list (int, float)
+    :return: RMSLE score
+    """
     return mlmetrics.rmsle(y, ypred)
 
 def trainingAccuracy(yTest, yPredicted):
+    """
+    Calculates Accuracy Score
+
+    :param yTest: list (int, float)
+    :param yPredicted: list (int, float)
+    :return: accuracy score
+    """
     return metrics.accuracy_score(yTest, yPredicted)
 
 def traintestSplit(X, Y, trainPercent=0.75, randomState=None):
+    """
+    Splits input and output class data sets into separate train and test sets.
+
+    :param X: array (int, float), list (int, float)
+    :param Y: array (int, float), list (int, float)
+    :param trainPercent (Optional, Default = 0.75) : Percentage of data set that will be used to create training set.
+    :param randomState (Optional, Default = False) : Random state is used to determine how the data set is split
+    :return: (xTrain, xTest, yTrain, yTest)
+    """
     xTrain, xTest, yTrain, yTest = crossVal.train_test_split(X, Y, train_size=trainPercent, random_state=randomState)
     return (xTrain, xTest, yTrain, yTest)
 
-def frange(start, end=None, n=-1):
-    if n == -1:
-        n = end / start
-        return np.linspace(start, stop=end, num=n)
+def frange(start, end, noOfPartitions=-1):
+    """
+    range() for floating point numbers, dividing the range into floating point increments
+
+    :param start: starting value (int, float)
+    :param end: ending value (int, float)
+    :param noOfPartitions (Optional, Default =  -1) : Decides the no of partitions to split the range. -1 indicates even split
+    :return: floating point range
+    """
+    if noOfPartitions == -1:
+        noOfPartitions = end / start
+        return np.linspace(start, stop=end, num=noOfPartitions)
     else:
-        return np.linspace(start, stop=end, num=n)
+        return np.linspace(start, stop=end, num=noOfPartitions)
 
 def crossValidationScore(algo, trainX, trainY, cvCount = 10):
     """
@@ -101,21 +154,41 @@ def __accuracyOfPredictedValues(predictions, dframe, outputClause):
     accuracy = sum(predictions[predictions == dframe[outputClause]]) / len(predictions)
     return accuracy
 
-def halfThresholdMapper(predictions):
-    for  prediction in (predictions):
-        yield 1 if prediction > 0.5 else 0
+def thresholdMapper(predictions, theta=0.5):
+    """
+    Mapping function with [theta (threshold) = 0.5]
 
-def measureKFoldAccuracy(dframe, algo, predictors, outputClass, outputClause, mapperFn=None, kFolds = 3, randomState = 1, ax=0):
+    :param predictions: list of predicted values
+    :param theta (Optional, Default = 0.5) : Min value that the prediction must have to be accepted to "high" output
+    :return: mapped prediction list
+    """
+    for  prediction in (predictions):
+        yield 1 if prediction > theta else 0
+
+def measureKFoldAccuracy(dframe, algo, predictors, outputClass, outputClause, mapperFn=None, kFolds = 3, randomState = 1):
+    """
+    Performs K-Fold analysis on given data and algorithm
+
+    :param dframe: pandas dataframe
+    :param algo: scikit algorithm (Machine Learning)
+    :param predictors: list of labels that are input classes in dframe
+    :param outputClass: string name of output class
+    :param outputClause: string name of output class (untested supported for multiple output classes)
+    :param mapperFn (Optional, Default = None) : MapperFunc of the type func(predictions), returns a list of mapped predictions
+    :param kFolds (Optional, Default = 3) : Number of folds to generate
+    :param randomState (Optional, Default = 1) : Seed value for randomness. Default behaviour is to get consistent samples
+    :return: K-Fold accuracy
+    """
     predictions = __kFold(dframe, algo, predictors, outputClass, nFolds=kFolds, randomState=randomState)
     predictions = __concatenatePredictions(predictions)
     if mapperFn is not None:
         __mapPredictionsValues(predictions, mapperFn)
     return __accuracyOfPredictedValues(predictions, dframe, outputClause)
 
-def printAllScores(crossvalidationScore, crossValidationAlgo, trainX, trainY, trainAccuracy, rmse, nrmse, kFoldAccuracy):
+def printAllScores(crossvalidationScore, learningAlgo, trainX, trainY, trainAccuracy, rmse, nrmse, kFoldAccuracy):
     print("Max Cross Validation Score : ", crossvalidationScore.max(), "\nAverage Cross Validation Score : ", crossvalidationScore.mean(),
-      "\nGradient Boosting Forest Score : ", crossValidationAlgo.score(trainX, trainY),
-      "\nTraining Accuracy : ", trainingAccuracy,
+      "\nGradient Boosting Forest Score : ", learningAlgo.score(trainX, trainY),
+      "\nTraining Accuracy : ", trainAccuracy,
       "\nRoot Mean Squared Error : ", rmse, "\nNormalized RMSE : ", nrmse,
       "\nKFold Accuracy : ", kFoldAccuracy)
 

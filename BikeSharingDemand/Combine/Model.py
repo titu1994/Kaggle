@@ -100,8 +100,8 @@ def selectXGBoost():
     return regressor1
 
 def selectRandomForest():                                       # min_samples_split=11
-    regCas = ensemble.RandomForestRegressor(1000, random_state=0, min_samples_split=10, oob_score=False, n_jobs=-1)
-    regRegistered = ensemble.RandomForestRegressor(1000, random_state=0, min_samples_split=10, oob_score=False, n_jobs=-1)
+    regCas = ensemble.RandomForestRegressor(1000, random_state=0, min_samples_split=11, oob_score=False, n_jobs=-1)
+    regRegistered = ensemble.RandomForestRegressor(1000, random_state=0, min_samples_split=11, oob_score=False, n_jobs=-1)
     regressor2 = Regressor(regCas, regRegistered)
 
     if enableLogs: print("Random Forest model created")
@@ -120,8 +120,8 @@ def cleanTrainset(df, isRF=False, describe=False):
     addDateColumn(traindf)
     addSundayColumn(traindf)
     addHoursAndDaypartColumns(traindf)
-    addIdeal(traindf)
-    addPeakColumn(traindf)
+    #addIdeal(traindf)
+    #addPeakColumn(traindf)
     #addSticky(traindf)
     #if not isRF:
 
@@ -137,8 +137,8 @@ def cleanTestSet(df, describe=False):
     addDateColumn(testdf)
     addSundayColumn(testdf)
     addHoursAndDaypartColumns(testdf)
-    addIdeal(testdf)
-    addPeakColumn(testdf)
+    #addIdeal(testdf)
+    #addPeakColumn(testdf)
     #addSticky(testdf)
 
     testdf = dropUnimportantFeatures(testdf, True)
