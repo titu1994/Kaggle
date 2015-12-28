@@ -1,11 +1,11 @@
-import math
 import numpy as nmp
 import xgboost as xgb
 import sklearn.ensemble as ensemble
 from sklearn.grid_search import GridSearchCV
 import Metric.Metrics as metrics
-
 from BikeSharingDemand.DataClean import *
+
+
 
 enableLogs = False
 
@@ -43,6 +43,34 @@ class Regressor:
         yRegressor[yRegressor < 0] = 0
         return yRegressor
 
+    def printXGBFeatureImportances(self, featurenames, xgbTree):
+        featureNames = featurenames
+        featureImportances = [(feature, importance)
+                            for feature, importance in zip(featureNames, sorted(xgbTree.booster().get_fscore(), key=lambda x: x[1]))]
+        print("Feature Importances : \n", featureImportances)
+
+        #featureImportance = xgb.plot_importance(xgbTree)
+        #sns.plt.show()
+
+    def printFeatureImportances(self, featurenames, featureImportances):
+        featureImportances = [(feature, importance) for feature, importance in zip(featurenames, featureImportances)]
+        featureImportances = sorted(featureImportances, key=lambda x: x[1], reverse=True)
+        print("Feature Importances : \n", featureImportances)
+
+
+
+    def feature_importances_(self, featurenames):
+        print("RF : Regressor 1 - Casual : ")
+        self.printFeatureImportances(featurenames, self.regCas.feature_importances_)
+        print("RF: Regressor 2 - Registered : ")
+        self.printFeatureImportances(featurenames, self.regRegistered.feature_importances_)
+
+    def feature_importances_xgb_(self, featurenames):
+        print("XGB : Regressor 1 - Casual : ")
+        self.printXGBFeatureImportances(featurenames, self.regCas)
+        print("XGB : Regressor 2 - Registered : ")
+        self.printXGBFeatureImportances(featurenames, self.regRegistered)
+
 
 class Combiner:
 
@@ -65,7 +93,6 @@ class Combiner:
             regressor.fit(xs, ys)
 
             if enableLogs: print("Combined Model: Finished training model %d" % ((i+1)))
-
 
         if enableLogs: print("Combined model: Finished fitting")
 
@@ -90,12 +117,16 @@ class Combiner:
 
         return ys
 
+    def feature_importances_(self, featurenames):
+        self.regressors[0].feature_importances_xgb_(featurenames)
+        self.regressors[1].feature_importances_(featurenames)
+
 def selectXGBoost():
     regCas = xgb.XGBRegressor(max_depth=6, seed=0, n_estimators=100,)
     regRegistered = xgb.XGBRegressor(max_depth=6, seed=0, n_estimators=100, )
     regressor1 = Regressor(regCas, regRegistered)
 
-    if enableLogs: print("XGBoost model creted")
+    if enableLogs: print("XGBoost model created")
 
     return regressor1
 
@@ -123,9 +154,6 @@ def cleanTrainset(df, isRF=False, describe=False):
     #addIdeal(traindf)
     #addPeakColumn(traindf)
     #addSticky(traindf)
-    #if not isRF:
-
-    #else:
 
     traindf = traindf.drop(["datetime", "time"], axis=1)
     if describe: describeDataframe(traindf)
@@ -148,12 +176,12 @@ def cleanTestSet(df, describe=False):
 """
 GridSearchParams for XGBoost
 """
+"""
+trainFrame = cleanTrainset(loadTrainData())
+trainData = convertPandasDataFrameToNumpyArray(trainFrame)
 
-#trainFrame = cleanTrainset(loadTrainData())
-#trainData = convertPandasDataFrameToNumpyArray(trainFrame)
-
-#trainX = trainData[:, 3:]
-#trainYCasReg = trainData[:, 0:2] # [casual, registered]
+trainX = trainData[:, 3:]
+trainYCasReg = trainData[:, 0:2] # [casual, registered]
 
 def evalMetric(estimator, X, y):
     xTrain, xTest, yTrain, yTest = metrics.traintestSplit(X, y, randomState=1)
@@ -161,12 +189,12 @@ def evalMetric(estimator, X, y):
     yPredicted = estimator.predict(xTest)
     return  metrics.rmsle2(yTest, yPredicted)
 
-"""
-{max_depth = 3, n_estimators=100, learning_rate=0.01}
+
+#{max_depth = 3, n_estimators=100, learning_rate=0.01}
 if __name__ == "__main__":
-    params = {"max_depth" : [3,4,5,6,7,8,9,10], "n_estimators" : [100, 200, 300, 400, 500], "learning_rate" : [0.01, 0.1, 0.2, 0.5]}
+    params = {"max_depth" : [5,6,7,8,9,10,11,12], "n_estimators" : [100, 200, 300, 400, 500], "learning_rate" : [0.01, 0.05, 0.1]}
     tree = xgb.XGBRegressor(seed=0, nthread=2)
-    clf = GridSearchCV(tree, params, verbose=1, n_jobs=2, cv=5, scoring=evalMetric)
+    clf = GridSearchCV(tree, params, verbose=1, n_jobs=1, cv=5, scoring=evalMetric)
 
     ys = trainYCasReg[:, 0].astype(int)
     clf.fit(trainX, ys)

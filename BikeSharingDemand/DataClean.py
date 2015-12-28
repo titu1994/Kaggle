@@ -21,10 +21,10 @@ def describeDataframe(df):
     print(df.dtypes, "\n")
 
 def factorizeColumns(df):
-    df["weather"] = df["weather"].astype('category')
-    df["holiday"] = df["holiday"].astype('category')
-    df["workingday"] = df["workingday"].astype("category")
-    df["season"] = df["season"].astype("category")
+    df["weather"] = df["weather"].astype(int)
+    df["holiday"] = df["holiday"].astype(int)
+    df["workingday"] = df["workingday"].astype(int)
+    df["season"] = df["season"].astype(int)
     return df
 
 def addTimeColumn(df):
@@ -38,12 +38,12 @@ def addDateColumn(df):
         date = datetime.strptime(df["datetime"], "%Y-%m-%d %H:%M:%S")
         return date.weekday()
     df["day"] = df[["datetime"]].apply(strpDate, axis=1)
-    df["day"] = df["day"].astype("category")
+    df["day"] = df["day"].astype(int)
 
 def addSundayColumn(df):
-    df.loc[df.day == "6", "sunday"] = 1
+    df.loc[df.day == 6, "sunday"] = 1
     df.loc[df.sunday != 1, "sunday"] = 0
-    df["sunday"] = df["sunday"].astype("category")
+    df["sunday"] = df["sunday"].astype(int)
 
 def addHoursAndDaypartColumns(df):
     def timeToHours(df):

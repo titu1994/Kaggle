@@ -1,15 +1,40 @@
 import csv
 import BikeSharingDemand.Combine.Model as model
+import Metric.Metrics as metrics
 
-trainFrame = model.cleanTrainset(model.loadTrainData(), describe=True)
+trainFrame = model.cleanTrainset(model.loadTrainData())
 trainData = model.convertPandasDataFrameToNumpyArray(trainFrame)
 
 trainX = trainData[:, 3:]
 trainYCasReg = trainData[:, 0:2] # [casual, registered]
 
-#print(trainYCasReg[:, 0].dtype)
+xTrain, xTest, yTrain, yTest = metrics.traintestSplit(trainX, trainYCasReg)
 
-testFrame = model.cleanTestSet(model.loadTestData(), True)
+#xgboost = model.selectXGBoost()
+#xgboost2 = model.selectXGBoost()
+
+boostCount = 8
+xgboosts = [model.selectXGBoost() for _ in range(boostCount)]
+
+combinedRegressor = model.Combiner(xgboosts)
+combinedRegressor.fit(xTrain, yTrain)
+
+yPred = combinedRegressor.predict(xTest)
+
+y = []
+for i, x in enumerate(yTest):
+    y.append(x[0] + x[1])
+
+rmsle = metrics.rmsle2(y, yPred)
+
+print("RMSLE Score : ", rmsle)
+
+
+"""
+Final Model
+"""
+
+testFrame = model.cleanTestSet(model.loadTestData())
 testData = model.convertPandasDataFrameToNumpyArray(testFrame)
 
 testX = testData[:, 1:]
@@ -17,11 +42,11 @@ testX = testData[:, 1:]
 # Enable logging
 model.enableLogs = True
 
-xgboost = model.selectXGBoost()
-rf = model.selectRandomForest()
-
-combinedRegressor = model.Combiner([xgboost, rf])
+combinedRegressor = model.Combiner(xgboosts)
 combinedRegressor.fit(trainX, trainYCasReg)
+
+#featurenames = model.getColNames(trainFrame)[3:]
+#combinedRegressor.feature_importances_(trainFrame)
 
 predictedY = combinedRegressor.predict(testX)
 

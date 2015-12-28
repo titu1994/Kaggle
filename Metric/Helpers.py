@@ -1,6 +1,7 @@
 from subprocess import check_call
 import sklearn.tree as tree
 import xgboost as xgb
+import seaborn as sns
 
 
 def printDecisionTree(fn, decisionTree, featureNames=None, opClassNames=None):
@@ -33,6 +34,7 @@ def printXGBoostTree(fn, xgBoostTree, numTrees=2, yesColor='#0000FF', noColor='#
     val.save(fn + ".dot")
     check_call(["dot", "-Tpdf", fn + ".dot", "-o", fn + ".pdf"])
 
+
 def printFeatureImportances(featurenames, featureImportances):
     """
     Prints the feature importances of classifiers or regressors in the sklearn package
@@ -43,3 +45,13 @@ def printFeatureImportances(featurenames, featureImportances):
     featureImportances = [(feature, importance) for feature, importance in zip(featurenames, featureImportances)]
     featureImportances = sorted(featureImportances, key=lambda x: x[1], reverse=True)
     print("Feature Importances : \n", featureImportances)
+
+def printXGBFeatureImportances(featurenames, xgbTree):
+    featureNames = featurenames
+    featureImportances = [(feature, importance)
+                          for feature, importance in zip(featureNames, sorted(xgbTree.booster().get_fscore(), key=lambda x: x[1]))]
+    print("Feature Importances : \n", featureImportances)
+    featureImportance = xgb.plot_importance(xgbTree)
+    sns.plt.show()
+
+
