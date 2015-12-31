@@ -57,7 +57,7 @@ def trainingAccuracy(yTest, yPredicted):
     """
     return metrics.accuracy_score(yTest, yPredicted)
 
-def traintestSplit(X, Y, trainPercent=0.90, randomState=None):
+def traintestSplit(X, Y, trainPercent=0.85, randomState=None):
     """
     Splits input and output class data sets into separate train and test sets.
 
