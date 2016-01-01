@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../Adaptive Sorting/.idea/Adaptive Sorting.iml" filepath="$PROJECT_DIR$/../Adaptive Sorting/.idea/Adaptive Sorting.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/Kaggle.iml" filepath="$PROJECT_DIR$/.idea/Kaggle.iml" />
     </modules>
   </component>
