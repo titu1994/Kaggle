@@ -1,19 +1,37 @@
 import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.svm import SVC
-
-from sklearn.pipeline import Pipeline
-from sklearn.grid_search import GridSearchCV
+import gc
 import MNIST.DataClean as dc
 
-trainFrame = dc.loadTrainData(describe=False)
-trainData = dc.convertPandasDataFrameToNumpyArray(trainFrame)
+trainData = dc.convertPandasDataFrameToNumpyArray(dc.loadTrainData(describe=False))
 
-pca = PCA(whiten=True)
-svm = SVC(random_state=0)
+trainX = trainData[:, 1:]
+trainY = trainData[:, 0]
 
-estimators = [("pca", pca), ("svm", svm)]
-pipe = Pipeline(estimators)
+pca = PCA(n_components=35, whiten=True)
+svm = SVC(random_state=0,)
+print("Loaded traindata")
+
+pca.fit(trainX)
+print("PCA : Finished fitting")
+trainX = pca.transform(trainX)
+print("PCA : Finished Transform of trainX")
+
+svm.fit(trainX, trainY)
+print("SVM : Finished fitting")
+
+trainX = trainY = trainData = None
+gc.collect()
+
+testData = dc.convertPandasDataFrameToNumpyArray(dc.loadTestData())
+testData = pca.transform(testData)
+print("Finished transforming testX")
+
+yPred = svm.predict(testData)
+
+np.savetxt('mnist-svm.csv', np.c_[range(1,len(yPred)+1),yPred], delimiter=',', header = 'ImageId,Label', comments = '', fmt='%d')
+print("Save predictions to file complete")
 
 
 """
