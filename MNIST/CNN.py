@@ -7,7 +7,7 @@ import keras.models as models
 import keras.utils.np_utils as kutils
 
 batch_size = 128 # 128
-nb_epoch = 200 # 12
+nb_epoch = 40 # 12
 
 img_rows, img_cols = 28, 28
 nb_filters = 32
