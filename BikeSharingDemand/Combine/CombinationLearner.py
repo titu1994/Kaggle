@@ -1,6 +1,6 @@
 import csv
-
 import BikeSharingDemand.Combine.Model as model
+import MLScripts.Metrics as Metrics
 
 trainFrame = model.cleanTrainset(model.loadTrainData())
 trainData = model.convertPandasDataFrameToNumpyArray(trainFrame)

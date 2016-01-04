@@ -7,7 +7,7 @@ import keras.models as models
 import keras.utils.np_utils as kutils
 
 batch_size = 128 # 128
-nb_epoch = 20 # 12
+nb_epoch = 200 # 12
 
 img_rows, img_cols = 28, 28
 nb_filters = 32
@@ -29,6 +29,8 @@ cnn.add(conv.MaxPooling2D())
 cnn.add(core.Dropout(0.25))
 cnn.add(core.Flatten())
 cnn.add(core.Dense(128, activation="relu"))
+cnn.add(core.Dropout(0.15))
+cnn.add(core.Dense(64, activation="relu"))
 cnn.add(core.Dropout(0.15))
 cnn.add(core.Dense(nb_classes, activation="softmax"))
 
