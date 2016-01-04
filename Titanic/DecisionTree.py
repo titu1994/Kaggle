@@ -1,12 +1,9 @@
 import csv
 from subprocess import check_call
 
-from sklearn.grid_search import GridSearchCV
-
-import Metric.Metrics as metrics
-import sklearn.tree as tree
-from sklearn.cross_validation import cross_val_score
 import seaborn as sns
+import sklearn.tree as tree
+
 sns.set_style("white")
 
 import Titanic.DataClean as dataclean
@@ -35,9 +32,9 @@ Cross Validation
 """
 # Cross Validation
 cvCount = 10
-crossvalidation = metrics.crossValidationScore(decisionTree, trainX, trainY)
+crossvalidation = Metrics.crossValidationScore(decisionTree, trainX, trainY)
 
-xTrain, xTest, yTrain, yTest = metrics.traintestSplit(trainX, trainY, randomState=1)
+xTrain, xTest, yTrain, yTest = Metrics.traintestSplit(trainX, trainY, randomState=1)
 
 """
 accuracyScores = []
@@ -75,12 +72,12 @@ decisionTree.fit(xTrain, yTrain)
 
 predictedY = decisionTree.predict(xTest)
 
-trainingAccuracy = metrics.trainingAccuracy(yTest, predictedY)
-rmse = metrics.rmse(yTest, predictedY)
-nrmse = metrics.nrmse(yTest, predictedY)
+trainingAccuracy = Metrics.trainingAccuracy(yTest, predictedY)
+rmse = Metrics.rmse(yTest, predictedY)
+nrmse = Metrics.nrmse(yTest, predictedY)
 
 predictors = dataclean.getFeatureNames()[2:]
-kfoldAccuracy = metrics.measureKFoldAccuracy(trainFrame, decisionTree, predictors, outputClass="Survived", outputClause="Survived", kFolds=10)
+kfoldAccuracy = Metrics.measureKFoldAccuracy(trainFrame, decisionTree, predictors, outputClass="Survived", outputClause="Survived", kFolds=10)
 
 print("Max Cross Validation Score : ", crossvalidation.max(), "\nAverage Cross Validation Score : ", crossvalidation.mean(),
       "\nExtraTreeCLassifier Score : ", decisionTree.score(xTrain, yTrain),

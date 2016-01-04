@@ -1,6 +1,6 @@
 import csv
+
 import BikeSharingDemand.Combine.Model as model
-import Metric.Metrics as metrics
 
 trainFrame = model.cleanTrainset(model.loadTrainData())
 trainData = model.convertPandasDataFrameToNumpyArray(trainFrame)
@@ -8,7 +8,7 @@ trainData = model.convertPandasDataFrameToNumpyArray(trainFrame)
 trainX = trainData[:, 3:]
 trainYCasReg = trainData[:, 0:2] # [casual, registered]
 
-xTrain, xTest, yTrain, yTest = metrics.traintestSplit(trainX, trainYCasReg)
+xTrain, xTest, yTrain, yTest = Metrics.traintestSplit(trainX, trainYCasReg)
 
 #xgboost = model.selectXGBoost()
 #xgboost2 = model.selectXGBoost()
@@ -25,7 +25,7 @@ y = []
 for i, x in enumerate(yTest):
     y.append(x[0] + x[1])
 
-rmsle = metrics.rmsle2(y, yPred)
+rmsle = Metrics.rmsle2(y, yPred)
 
 print("RMSLE Score : ", rmsle)
 

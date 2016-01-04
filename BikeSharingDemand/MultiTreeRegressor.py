@@ -1,11 +1,10 @@
-from sklearn.grid_search import GridSearchCV
-import BikeSharingDemand.DataClean as dataclean
 import csv
+
 import sklearn.ensemble as ensemble
-import xgboost as xgb
-import Metric.Metrics as metrics
 import sklearn.tree as tree
-import pandas as pd
+import xgboost as xgb
+
+import BikeSharingDemand.DataClean as dataclean
 
 trainFrame = dataclean.cleanDataset(dataclean.loadTrainData())
 trainData = dataclean.convertPandasDataFrameToNumpyArray(trainFrame)
@@ -21,7 +20,7 @@ testX = testData[:, 1:]
 """
 Cross Validation
 """
-xTrain, xTest, yTrain, yTest = metrics.traintestSplit(trainX, trainY, randomState=1)
+xTrain, xTest, yTrain, yTest = Metrics.traintestSplit(trainX, trainY, randomState=1)
 
 xgbtree = xgb.XGBRegressor(n_estimators=500, learning_rate=0.01, max_depth=10, seed=1, nthread=4)
 gbtree = ensemble.GradientBoostingRegressor(n_estimators=400, learning_rate=0.01, max_depth=6, random_state=1, presort=True)

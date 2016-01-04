@@ -1,13 +1,12 @@
 import csv
+
 import seaborn as sns
-import pickle
-from sklearn.grid_search import GridSearchCV
 
 sns.set_style("white")
 import xgboost as xgb
 from sklearn.cross_validation import cross_val_score
 
-import Metric.Metrics as metric
+import MLScripts.Metrics as metric
 import Titanic.DataClean as dataclean
 
 trainFrame = dataclean.cleanDataSet(dataclean.loadTrainData())

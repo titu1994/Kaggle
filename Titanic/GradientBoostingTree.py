@@ -1,10 +1,10 @@
-import Titanic.DataClean as dataclean
 import csv
-import math
-import sklearn.ensemble as ensemble
-from subprocess import check_call
-import Metric.Metrics as metrics
+
 import seaborn as sns
+import sklearn.ensemble as ensemble
+
+import Titanic.DataClean as dataclean
+
 sns.set_style("whitegrid")
 
 
@@ -33,9 +33,9 @@ Cross Validation
 """
 # Cross Validation
 cvCount = 10
-crossvalidation = metrics.crossValidationScore(randomForest, trainX, trainY, cvCount=cvCount)
+crossvalidation = Metrics.crossValidationScore(randomForest, trainX, trainY, cvCount=cvCount)
 
-xTrain, xTest, yTrain, yTest = metrics.traintestSplit(trainX, trainY, randomState=1)
+xTrain, xTest, yTrain, yTest = Metrics.traintestSplit(trainX, trainY, randomState=1)
 """
 accuracyScores = []
 rngs = metrics.frange(0.01, 0.2)
@@ -56,12 +56,12 @@ crossvalidationTree.fit(xTrain, yTrain)
 
 yPredict = crossvalidationTree.predict(xTest)
 
-trainingAccuracy = metrics.trainingAccuracy(yTest, yPredict)
-rmse = metrics.rmse(yTest, yPredict)
-nrmse = metrics.nrmse(yTest, yPredict)
+trainingAccuracy = Metrics.trainingAccuracy(yTest, yPredict)
+rmse = Metrics.rmse(yTest, yPredict)
+nrmse = Metrics.nrmse(yTest, yPredict)
 
 predictors = dataclean.getFeatureNames()[2:]
-kfoldAccuracy = metrics.measureKFoldAccuracy(trainFrame, crossvalidationTree, predictors, outputClass="Survived", outputClause="Survived", kFolds=10)
+kfoldAccuracy = Metrics.measureKFoldAccuracy(trainFrame, crossvalidationTree, predictors, outputClass="Survived", outputClause="Survived", kFolds=10)
 
 print("Max Cross Validation Score : ", crossvalidation.max(), "\nAverage Cross Validation Score : ", crossvalidation.mean(),
       "\nGradient Boosting Forest Score : ", crossvalidationTree.score(xTrain, yTrain),

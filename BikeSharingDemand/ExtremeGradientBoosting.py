@@ -1,10 +1,11 @@
-from sklearn.grid_search import GridSearchCV
-import BikeSharingDemand.DataClean as dataclean
 import csv
+
+import seaborn as sns
 import sklearn.ensemble as ensemble
 import xgboost as xgb
-import Metric.Metrics as metrics
-import seaborn as sns
+
+import BikeSharingDemand.DataClean as dataclean
+
 sns.set_style("whitegrid")
 
 trainFrame = dataclean.cleanDataset(dataclean.loadTrainData())
@@ -23,9 +24,9 @@ Cross Validation
 """                                                                                     #colsample_bytree=5
 crossvalidationTree = xgb.XGBRegressor(n_estimators=300, learning_rate=0.01, max_depth=10, seed=1, nthread=4)
 cvCount = 10
-crossvalidation = metrics.crossValidationScore(ensemble.GradientBoostingRegressor(random_state=1), trainX, trainY, cvCount=cvCount)
+crossvalidation = Metrics.crossValidationScore(ensemble.GradientBoostingRegressor(random_state=1), trainX, trainY, cvCount=cvCount)
 
-xTrain, xTest, yTrain, yTest = metrics.traintestSplit(trainX, trainY, randomState=1)
+xTrain, xTest, yTrain, yTest = Metrics.traintestSplit(trainX, trainY, randomState=1)
 
 """
 #{'n_estimators': 400, 'max_depth': 6, 'learning_rate': 0.01
@@ -41,7 +42,7 @@ if __name__ == "__main__":
 
 def evalMetric(yPredicted, yTrainDMatrix):
     yT = yTrainDMatrix.get_label()
-    return ("rmsle", metrics.rmsle(yT, yPredicted))
+    return ("rmsle", Metrics.rmsle(yT, yPredicted))
 
 evalSet = [(xTrain, yTrain), (xTest, yTest)]
 
@@ -50,15 +51,15 @@ crossvalidationTree.fit(xTrain, yTrain, eval_metric=evalMetric, verbose=False)
 yPredict = crossvalidationTree.predict(xTest)
 
 #trainingAccuracy = metrics.trainingAccuracy(yTest, yPredict)
-rmse = metrics.rmse(yTest, yPredict)
-nrmse = metrics.nrmse(yTest, yPredict)
+rmse = Metrics.rmse(yTest, yPredict)
+nrmse = Metrics.nrmse(yTest, yPredict)
 
 for i, x in enumerate(yPredict):
     if yPredict[i] < 0:
         print("yActual : ", yTest[i], " yPredicted : ", yPredict[i])
         yPredict[i] = -yPredict[i]
 
-logloss = metrics.rmsle(yTest, yPredict)
+logloss = Metrics.rmsle(yTest, yPredict)
 
 print("Max Cross Validation Score : ", crossvalidation.max(), "\nAverage Cross Validation Score : ", crossvalidation.mean(),
       "\nGradient Boosting Forest Score : ", crossvalidationTree.score(xTrain, yTrain),

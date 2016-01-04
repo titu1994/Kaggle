@@ -1,9 +1,8 @@
-from sklearn.grid_search import GridSearchCV
+import csv
+
+import sklearn.ensemble as ensemble
 
 import BikeSharingDemand.DataClean as dataclean
-import csv
-import sklearn.ensemble as ensemble
-import Metric.Metrics as metrics
 
 trainFrame = dataclean.cleanDataset(dataclean.loadTrainData())
 trainData = dataclean.convertPandasDataFrameToNumpyArray(trainFrame)
@@ -21,9 +20,9 @@ Cross Validation
 """
 crossvalidationTree = ensemble.GradientBoostingRegressor(n_estimators=400, learning_rate=0.01, max_depth=6, random_state=1, presort=True)
 cvCount = 10
-crossvalidation = metrics.crossValidationScore(ensemble.GradientBoostingRegressor(random_state=1), trainX, trainY, cvCount=cvCount)
+crossvalidation = Metrics.crossValidationScore(ensemble.GradientBoostingRegressor(random_state=1), trainX, trainY, cvCount=cvCount)
 
-xTrain, xTest, yTrain, yTest = metrics.traintestSplit(trainX, trainY, randomState=1)
+xTrain, xTest, yTrain, yTest = Metrics.traintestSplit(trainX, trainY, randomState=1)
 
 """
 #{'n_estimators': 400, 'max_depth': 6, 'learning_rate': 0.01
@@ -42,9 +41,9 @@ crossvalidationTree.fit(xTrain, yTrain)
 yPredict = crossvalidationTree.predict(xTest)
 
 #trainingAccuracy = metrics.trainingAccuracy(yTest, yPredict)
-rmse = metrics.rmse(yTest, yPredict)
-nrmse = metrics.nrmse(yTest, yPredict)
-logloss = metrics.rmsle(yTest, yPredict)
+rmse = Metrics.rmse(yTest, yPredict)
+nrmse = Metrics.nrmse(yTest, yPredict)
+logloss = Metrics.rmsle(yTest, yPredict)
 
 print("Max Cross Validation Score : ", crossvalidation.max(), "\nAverage Cross Validation Score : ", crossvalidation.mean(),
       "\nGradient Boosting Forest Score : ", crossvalidationTree.score(xTrain, yTrain),

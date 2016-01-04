@@ -1,11 +1,8 @@
 import numpy as nmp
-import xgboost as xgb
 import sklearn.ensemble as ensemble
-from sklearn.grid_search import GridSearchCV
-import Metric.Metrics as metrics
+import xgboost as xgb
+
 from BikeSharingDemand.DataClean import *
-
-
 
 enableLogs = False
 

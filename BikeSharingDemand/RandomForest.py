@@ -1,8 +1,8 @@
-from sklearn.grid_search import GridSearchCV
-import BikeSharingDemand.DataClean as dataclean
 import csv
+
 import sklearn.ensemble as ensemble
-import Metric.Metrics as metrics
+
+import BikeSharingDemand.DataClean as dataclean
 
 trainFrame = dataclean.cleanDataset(dataclean.loadTrainData())
 trainData = dataclean.convertPandasDataFrameToNumpyArray(trainFrame)
@@ -20,9 +20,9 @@ Cross Validation
 """
 crossvalidationTree = ensemble.RandomForestRegressor(n_estimators=500, n_jobs=4, random_state=1)
 cvCount = 10
-crossvalidation = metrics.crossValidationScore(ensemble.GradientBoostingRegressor(random_state=1), trainX, trainY, cvCount=cvCount)
+crossvalidation = Metrics.crossValidationScore(ensemble.GradientBoostingRegressor(random_state=1), trainX, trainY, cvCount=cvCount)
 
-xTrain, xTest, yTrain, yTest = metrics.traintestSplit(trainX, trainY, randomState=1)
+xTrain, xTest, yTrain, yTest = Metrics.traintestSplit(trainX, trainY, randomState=1)
 
 """
 #{'n_estimators': 400, 'max_depth': 6, 'learning_rate': 0.01
@@ -41,15 +41,15 @@ crossvalidationTree.fit(xTrain, yTrain)
 yPredict = crossvalidationTree.predict(xTest)
 
 #trainingAccuracy = metrics.trainingAccuracy(yTest, yPredict)
-rmse = metrics.rmse(yTest, yPredict)
-nrmse = metrics.nrmse(yTest, yPredict)
+rmse = Metrics.rmse(yTest, yPredict)
+nrmse = Metrics.nrmse(yTest, yPredict)
 
 for i, x in enumerate(yPredict):
     if yPredict[i] < 0:
         #print("Yactucal : ", yTest[i], " Ypredict : ", yPredict[i])
         yPredict[i] = -yPredict[i]
 
-logloss = metrics.rmsle(yTest, yPredict)
+logloss = Metrics.rmsle(yTest, yPredict)
 
 print("Max Cross Validation Score : ", crossvalidation.max(), "\nAverage Cross Validation Score : ", crossvalidation.mean(),
       #"\nGradient Boosting Forest Score : ", crossvalidationTree.score(xTrain, yTrain),
