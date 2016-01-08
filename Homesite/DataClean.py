@@ -10,6 +10,13 @@ def loadTrainData(describe=False):
 def loadTestData(describe=False):
     return loadData(r"C:\Users\Yue\PycharmProjects\Kaggle\Homesite\Data\test.csv", describe=describe)
 
+def encodeQuoteFlag(df):
+    y = df.QuoteConversion_Flag.values
+    encoder = preproc.LabelEncoder()
+    y = encoder.fit_transform(y).astype(np.int32)
+    df["QuoteConversion_Flag"] = y
+    return df, len(encoder.classes_)
+
 def addDateColumn(df):
     df['Date'] = pd.to_datetime(pd.Series(df['Original_Quote_Date']))
     df = df.drop('Original_Quote_Date', axis=1)
@@ -22,21 +29,34 @@ def addDateColumn(df):
     df = df.fillna(-1)
     return df
 
-def preprocessObjects(df):
-    for f in df.columns:
-        if df[f].dtype=='object':
+
+def postprocessObjects(dfTrain, dfTest):
+    for f in dfTrain.columns:
+        if dfTrain[f].dtype=='object':
             #print(f)
             lbl = preproc.LabelEncoder()
-            lbl.fit(list(df[f].values))
-            df[f] = lbl.transform(list(df[f].values))
+            lbl.fit(list(dfTrain[f].values) + list(dfTest[f].values))
+            dfTrain[f] = lbl.transform(list(dfTrain[f].values))
+            dfTest[f] = lbl.transform(list(dfTest[f].values))
+    return (dfTrain, dfTest)
 
-def cleanData(df, istest=False, describe=False):
+def cleanData(df, istest=False, describe=False, ):
     df = addDateColumn(df)
-    preprocessObjects(df)
 
     if not istest: df = dropUnimportantFeatures(df, ['QuoteNumber'])
     if describe: describeDataframe(df)
     return df
+
+def cleanDataNN(df, istest=False, describe=False, ):
+    noOfClasses = 0
+    df = addDateColumn(df)
+
+    if not istest:
+        df = dropUnimportantFeatures(df, ['QuoteNumber'])
+        df, noOfClasses = encodeQuoteFlag(df)
+
+    if describe: describeDataframe(df)
+    return df, noOfClasses
 
 
 
