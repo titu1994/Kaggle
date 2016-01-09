@@ -29,6 +29,15 @@ def addDateColumn(df):
     df = df.fillna(-1)
     return df
 
+def addZeroCount(df):
+    cols = [col for col in df.columns if col != "QuoteConversion_Flag"]
+    df["CountZero"]=np.sum(df[cols] == 0, axis = 1)
+    return df
+
+def addBelowZero(df):
+    df["Below0"] = np.sum(df < 0, axis = 1)
+    return df
+
 
 def postprocessObjects(dfTrain, dfTest):
     for f in dfTrain.columns:
@@ -42,6 +51,8 @@ def postprocessObjects(dfTrain, dfTest):
 
 def cleanData(df, istest=False, describe=False, ):
     df = addDateColumn(df)
+    addBelowZero(df)
+    addZeroCount(df)
 
     if not istest: df = dropUnimportantFeatures(df, ['QuoteNumber'])
     if describe: describeDataframe(df)
@@ -50,6 +61,8 @@ def cleanData(df, istest=False, describe=False, ):
 def cleanDataNN(df, istest=False, describe=False, ):
     noOfClasses = 0
     df = addDateColumn(df)
+    addBelowZero(df)
+    addZeroCount(df)
 
     if not istest:
         df = dropUnimportantFeatures(df, ['QuoteNumber'])
