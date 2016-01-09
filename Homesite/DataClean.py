@@ -5,10 +5,10 @@ import sklearn.preprocessing as preproc
 
 
 def loadTrainData(describe=False):
-    return loadData(r"C:\Users\Yue\PycharmProjects\Kaggle\Homesite\Data\train.csv", describe=describe)
+    return loadData(r"D:\Users\Yue\PycharmProjects\Kaggle\Homesite\Data\train.csv", describe=describe)
 
 def loadTestData(describe=False):
-    return loadData(r"C:\Users\Yue\PycharmProjects\Kaggle\Homesite\Data\test.csv", describe=describe)
+    return loadData(r"D:\Users\Yue\PycharmProjects\Kaggle\Homesite\Data\test.csv", describe=describe)
 
 def encodeQuoteFlag(df):
     y = df.QuoteConversion_Flag.values

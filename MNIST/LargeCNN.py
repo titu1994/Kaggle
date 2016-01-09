@@ -6,7 +6,7 @@ import keras.models as models
 import keras.utils.np_utils as kutils
 
 batch_size = 128 # 128
-nb_epoch = 50 # 12
+nb_epoch = 60 # 12
 
 img_rows, img_cols = 28, 28
 nb_filters = 32
@@ -29,9 +29,9 @@ cnn.add(conv.Convolution2D(128, nb_conv, nb_conv, activation="relu"))
 cnn.add(conv.MaxPooling2D())
 cnn.add(core.Dropout(0.2))
 
-cnn.add(conv.Convolution2D(256, 3, 3, border_mode="valid", activation="relu"))
+cnn.add(conv.Convolution2D(256, nb_conv, nb_conv, border_mode="valid", activation="relu"))
 #cnn.add(conv.MaxPooling2D())
-cnn.add(conv.Convolution2D(256, 3, 3, activation="relu"))
+cnn.add(conv.Convolution2D(256, 5, nb_conv, activation="relu"))
 cnn.add(conv.MaxPooling2D())
 cnn.add(core.Dropout(0.2))
 
