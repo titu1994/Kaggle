@@ -23,29 +23,35 @@ noFeatures = trainX.shape[1]
 scaler = preproc.StandardScaler()
 trainX = scaler.fit_transform(trainX)
 
-epochs = 20
+epochs = 8
 
-nn = models.Sequential()
-nn.add(norm.BatchNormalization(input_shape=(noFeatures,)))
-nn.add(core.Dense(299, activation="relu"))
-nn.add(core.Dense(598, activation="relu"),)
-nn.add(core.Dropout(0.25))
-#nn.add(core.Dense(299, activation="relu"))
-nn.add(core.Dense(noOfClasses, activation="softmax"))
+nn = models.Graph()
+nn.add_input(name="input", input_shape=(noFeatures,))
+nn.add_node(norm.BatchNormalization(input_shape=(noFeatures,)), name="batchnormal", input="input")
+
+nn.add_node(core.Dense(598, activation="relu"), name="d11", input="batchnormal")
+nn.add_node(core.Dense(299, activation="relu"), name="d12", input="d11")
+nn.add_node(core.Dropout(0.25), name="drop1", input="d12")
+
+nn.add_node(core.Dense(299, activation="relu"), name="d21", input="batchnormal")
+nn.add_node(core.Dense(598, activation="relu"), name="d22", input="d21")
+nn.add_node(core.Dropout(0.25), name="drop2", input="d22")
+
+nn.add_node(core.Dense(noOfClasses, activation="softmax"), name="output", inputs=["drop1", "drop2"], create_output=True)
 
 print(nn.summary())
 
-nn.compile(optimizer="adadelta", loss="mean_squared_error")
+nn.compile(optimizer="adadelta", loss={"output" : "mean_squared_error"})
 #                                                                       callbacks=[callbacks.EarlyStopping(patience=2, verbose=1)]
-nn.fit(trainX, trainY, nb_epoch=epochs, verbose=1, show_accuracy=True, validation_split=0.01, )
+nn.fit({"input" : trainX, "output" : trainY}, nb_epoch=epochs, verbose=1, validation_split=0.01, )
 
 testData = dc.convertPandasDataFrameToNumpyArray(testFrame)
 testX = testData[:, 1:]
 #print("No of test features : ", testX.shape[1])
 testX = preproc.StandardScaler().fit_transform(testX)
-yPred = nn.predict_proba(testX)[:, 1]
+yPred = nn.predict({"input" : testX},verbose=1)
 
-f = open("simple_nn.csv", "w", newline="")
+f = open("graph_nn.csv", "w", newline="")
 csvWriter = csv.writer(f)
 csvWriter.writerow(["QuoteNumber", "QuoteConversion_Flag"])
 
