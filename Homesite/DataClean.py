@@ -5,10 +5,10 @@ import sklearn.preprocessing as preproc
 
 
 def loadTrainData(describe=False):
-    return loadData(r"D:\Users\Yue\PycharmProjects\Kaggle\Homesite\Data\train.csv", describe=describe)
+    return loadData(r"C:\Users\Yue\PycharmProjects\Kaggle\Homesite\Data\train.csv", describe=describe)
 
 def loadTestData(describe=False):
-    return loadData(r"D:\Users\Yue\PycharmProjects\Kaggle\Homesite\Data\test.csv", describe=describe)
+    return loadData(r"C:\Users\Yue\PycharmProjects\Kaggle\Homesite\Data\test.csv", describe=describe)
 
 def encodeQuoteFlag(df):
     y = df.QuoteConversion_Flag.values
@@ -38,6 +38,21 @@ def addBelowZero(df):
     df["Below0"] = np.sum(df < 0, axis = 1)
     return df
 
+def removeWeakCols(df):
+    return df.drop(['PropertyField6', 'GeographicField10A'], axis=1, )
+
+def addGoldenCols(df):
+    goldenCols = [("CoverageField1B","PropertyField21B"),
+                ("GeographicField6A","GeographicField8A"),
+                ("GeographicField6A","GeographicField13A"),
+                ("GeographicField8A","GeographicField13A"),
+                ("GeographicField11A","GeographicField13A"),
+                ("GeographicField8A","GeographicField11A")]
+
+    for featureA,featureB in goldenCols:
+        df["_".join([featureA,featureB,"diff"])]=df[featureA]-df[featureB]
+    return df
+
 
 def postprocessObjects(dfTrain, dfTest):
     for f in dfTrain.columns:
@@ -61,8 +76,8 @@ def cleanData(df, istest=False, describe=False, ):
 def cleanDataNN(df, istest=False, describe=False, ):
     noOfClasses = 0
     df = addDateColumn(df)
-    addBelowZero(df)
-    addZeroCount(df)
+    #addBelowZero(df)
+    #addZeroCount(df)
 
     if not istest:
         df = dropUnimportantFeatures(df, ['QuoteNumber'])
@@ -71,5 +86,17 @@ def cleanDataNN(df, istest=False, describe=False, ):
     if describe: describeDataframe(df)
     return df, noOfClasses
 
+def cleanDataCXNN(df, istest=False, describe=False, ):
+    noOfClasses = 0
+    df = addDateColumn(df)
+    df = removeWeakCols(df)
+    df = addGoldenCols(df)
+
+    if not istest:
+        df = dropUnimportantFeatures(df, ['QuoteNumber'])
+        df, noOfClasses = encodeQuoteFlag(df)
+
+    if describe: describeDataframe(df)
+    return df, noOfClasses
 
 
