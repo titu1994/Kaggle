@@ -14,7 +14,7 @@ xgb1 = xgb.XGBClassifier(max_depth=10, n_estimators=50, seed=0, learning_rate=0.
 xgb2 = xgb.XGBClassifier(max_depth=10, n_estimators=100, seed=0, learning_rate=0.1, subsample=0.9, colsample_bytree=0.8)
 xgb3 = xgb.XGBClassifier(max_depth=6, n_estimators=6000, seed=0, learning_rate=0.01, subsample=0.83, colsample_bytree=0.77)
 
-xgbBlend = xgb.XGBClassifier(max_depth=6, n_estimators=6000, seed=0, learning_rate=0.01, subsample=0.83, colsample_bytree=0.77)
+xgbBlend = xgb.XGBClassifier(max_depth=6, n_estimators=100, seed=0, learning_rate=0.1, subsample=0.83, colsample_bytree=0.77)
 clfs = [xgb1, xgb2, xgb3]
 
 ensemble = stack.StackedClassifier(clfs, xgbBlend, verbose=True)
