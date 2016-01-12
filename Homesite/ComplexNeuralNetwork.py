@@ -30,7 +30,7 @@ trainX = scaler.fit_transform(trainX)
 Final Model
 """
 
-epochs = 20
+epochs = 8
 
 nn = models.Sequential()
 
@@ -57,8 +57,6 @@ opt = optm.Adadelta(lr=1, decay=0.995, epsilon=1e-5)
 nn.compile(optimizer=opt, loss="binary_crossentropy")
 #                                                                       callbacks=[callbacks.EarlyStopping(patience=2, verbose=1)]
 nn.fit(trainX, trainY, nb_epoch=epochs, verbose=1, show_accuracy=True, validation_split=0.01, batch_size=256)
-
-nn.save_weights("complex_nn_weights.h5", overwrite=True)
 
 testData = dc.convertPandasDataFrameToNumpyArray(testFrame)
 testX = testData[:, 1:]
