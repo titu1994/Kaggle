@@ -7,4 +7,4 @@ def loadTestData():
     return loadData(r"D:\Users\Yue\PycharmProjects\Kaggle\MNIST\Data\test.csv", )
 
 
-loadTrainData(describe=True)
+#loadTrainData(describe=True)

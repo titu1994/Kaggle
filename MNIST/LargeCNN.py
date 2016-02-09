@@ -6,7 +6,7 @@ import keras.models as models
 import keras.utils.np_utils as kutils
 
 batch_size = 128 # 128
-nb_epoch = 60 # 12
+nb_epoch = 100 # 12
 
 img_rows, img_cols = 28, 28
 nb_filters = 32
@@ -24,21 +24,19 @@ nb_classes = trainY.shape[1]
 cnn = models.Sequential()
 
 cnn.add(conv.Convolution2D(128, nb_conv, nb_conv, border_mode="valid", input_shape=(1, 28, 28), activation="relu"))
-#cnn.add(conv.MaxPooling2D())
 cnn.add(conv.Convolution2D(128, nb_conv, nb_conv, activation="relu"))
 cnn.add(conv.MaxPooling2D())
 cnn.add(core.Dropout(0.2))
 
 cnn.add(conv.Convolution2D(256, nb_conv, nb_conv, border_mode="valid", activation="relu"))
-#cnn.add(conv.MaxPooling2D())
 cnn.add(conv.Convolution2D(256, 5, nb_conv, activation="relu"))
 cnn.add(conv.MaxPooling2D())
 cnn.add(core.Dropout(0.2))
 
 cnn.add(core.Flatten())
-cnn.add(core.Dropout(0.5))
+cnn.add(core.Dropout(0.25))
 cnn.add(core.Dense(1024, activation="relu")) # 500, tanh
-cnn.add(core.Dropout(0.50))
+cnn.add(core.Dropout(0.25))
 cnn.add(core.Dense(nb_classes, activation="softmax"))
 
 #sgd = optm.sgd(lr=0.01, momentum=0.9, decay=1e-6, nesterov=True)
