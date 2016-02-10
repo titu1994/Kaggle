@@ -1,8 +1,9 @@
-import xgboost as xgb
 import BNP.DataClean as dc
+import keras.layers.core as core
+import keras.models as models
+import keras.utils.np_utils as kutils
+import numpy as np
 import csv
-
-from sklearn.metrics import log_loss, make_scorer
 
 traindf, testdf = dc.loadTrain(), dc.loadTest()
 traindf, testdf = dc.cleanData(traindf, testdf, describe=False)
@@ -10,17 +11,22 @@ traindf, testdf = dc.cleanData(traindf, testdf, describe=False)
 trainData, testData = dc.convertPandasDataFrameToNumpyArray(traindf), dc.convertPandasDataFrameToNumpyArray(testdf)
 
 trainX = trainData[:, 2:]
+trainX -= np.mean(trainX)
+trainX /= np.std(trainX)
+
 trainY = trainData[:, 1]
 
 testX = testData[:, 1:]
+testX -= np.mean(testX)
+testX /= np.std(testX)
 
-# Parameter : Number of Trees
-numTree = 1800
+model = models.Sequential()
+model.add(core.Dense(200, input_shape=()))
 
-model = xgb.XGBRegressor(max_depth=7, learning_rate=0.01, n_estimators=numTree, subsample=0.75, colsample_bytree=0.68)
 
-model.fit(trainX, trainY, eval_metric="auc", eval_set=[(trainX[:1000], trainY[:1000]),], early_stopping_rounds=100)
+model.summary()
 
+"""
 yPred = model.predict(testX)
 
 min_y_pred = min(yPred)
@@ -36,3 +42,4 @@ open_file_object = csv.writer(predictions_file)
 open_file_object.writerow(["ID", "PredictedProb"])
 open_file_object.writerows(zip(testData[:, 0].astype(int), yPred))
 predictions_file.close()
+"""
