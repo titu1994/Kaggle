@@ -5,11 +5,11 @@ import seaborn as sns
 sns.set_style("white")
 
 def loadTrainData():
-    df = pd.read_csv(r"C:\Users\Yue\PycharmProjects\Kaggle\BikeSharingDemand\Data\train.csv", header=0)
+    df = pd.read_csv(r"D:\Users\Yue\PycharmProjects\Kaggle\BikeSharingDemand\Data\train.csv", header=0)
     return df
 
 def loadTestData():
-    df = pd.read_csv(r"C:\Users\Yue\PycharmProjects\Kaggle\BikeSharingDemand\Data\test.csv", header=0)
+    df = pd.read_csv(r"D:\Users\Yue\PycharmProjects\Kaggle\BikeSharingDemand\Data\test.csv", header=0)
     return df
 
 def getColNames(df):

@@ -23,6 +23,7 @@ if __name__ == "__main__":
 
     # {'max_depth': 11, 'n_estimators': 75}
     model = ensemble.RandomForestRegressor(n_estimators=75, max_depth=11, random_state=0)
+    model.fit()
     """
     params = {"max_depth" : [9,10,11,12,13], "n_estimators" : [25, 35, 40, 50, 75], }
 

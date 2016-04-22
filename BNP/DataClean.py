@@ -17,10 +17,8 @@ def loadTest() -> pd.DataFrame:
 
 def cleanData(traindf: pd.DataFrame, testdf: pd.DataFrame, describe=False) -> (pd.DataFrame, pd.DataFrame):
 
-    traindf.drop(['v22'], axis=1, inplace=True)
-    traindf.drop(['v91'], axis=1, inplace=True)
-    testdf.drop(['v22'], axis=1, inplace=True)
-    testdf.drop(['v91'], axis=1, inplace=True)
+    traindf.drop(['v22', 'v91'], axis=1, inplace=True)
+    testdf.drop(['v22', 'v91'], axis=1, inplace=True)
 
     nas = {}
     for colname in objectCols:

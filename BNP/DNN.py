@@ -14,20 +14,33 @@ trainX = trainData[:, 2:]
 trainX -= np.mean(trainX)
 trainX /= np.std(trainX)
 
+nFeatures = trainX.shape[1]
+
 trainY = trainData[:, 1]
 
 testX = testData[:, 1:]
 testX -= np.mean(testX)
 testX /= np.std(testX)
 
-model = models.Sequential()
-model.add(core.Dense(200, input_shape=()))
+epochs = 100
 
+model = models.Sequential()
+model.add(core.Dense(2000, init="uniform", input_shape=(nFeatures,), activation="relu"))
+model.add(core.Dropout(0.2))
+model.add(core.Dense(1000, activation="relu"))
+model.add(core.Dropout(0.2))
+model.add(core.Dense(1000, activation="relu"))
+model.add(core.Dropout(0.2))
+model.add(core.Dense(1000, activation="relu"))
+model.add(core.Dense(1, activation="sigmoid"))
 
 model.summary()
 
-"""
-yPred = model.predict(testX)
+model.compile(optimizer="adamax", loss="binary_crossentropy", class_mode="binary")
+model.fit(trainX, trainY, nb_epoch=epochs, validation_split=0.05, show_accuracy=True)
+
+yPred = model.predict_proba(testX)[:,0]
+#print(yPred)
 
 min_y_pred = min(yPred)
 max_y_pred = max(yPred)
@@ -37,9 +50,9 @@ max_y_train = max(trainY)
 for i in range(len(yPred)):
     yPred[i] = min_y_train + (((yPred[i] - min_y_pred)/(max_y_pred - min_y_pred))*(max_y_train - min_y_train))
 
-predictions_file = open("xgboost_result.csv", "w", newline="")
+predictions_file = open("dnn.csv", "w", newline="")
 open_file_object = csv.writer(predictions_file)
 open_file_object.writerow(["ID", "PredictedProb"])
 open_file_object.writerows(zip(testData[:, 0].astype(int), yPred))
 predictions_file.close()
-"""
+print("Finished")
