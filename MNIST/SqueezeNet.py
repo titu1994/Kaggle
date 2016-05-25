@@ -10,7 +10,7 @@ import MNIST.DataClean as dc
 import numpy as np
 
 batch_size = 128 # 128
-nb_epoch = 100 # 12
+nb_epoch = 200 # 12
 img_rows, img_cols = 28, 28
 
 trainData = dc.convertPandasDataFrameToNumpyArray(dc.loadTrainData(describe=False))
@@ -109,10 +109,10 @@ plot(model, "SqueezeNet.png", show_shapes=True)
 
 model.compile(optimizer="adadelta", loss="categorical_crossentropy", metrics=["accuracy"])
 
-model.load_weights("SqueezeNet Weights.h5")
+#model.load_weights("SqueezeNet Weights.h5")
 print("Model loaded")
 
-#model.fit(trainX,trainY, batch_size=batch_size, nb_epoch=nb_epoch)
+model.fit(trainX,trainY, batch_size=batch_size, nb_epoch=nb_epoch)
 
 model.save_weights("SqueezeNet Weights.h5", overwrite=True)
 print("Model saved.")
