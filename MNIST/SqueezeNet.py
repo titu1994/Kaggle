@@ -104,7 +104,7 @@ softmax = Dense(nb_classes, activation="softmax")(flatten)
 
 model = Model(input=input_layer, output=softmax)
 
-#model.summary()
+model.summary()
 plot(model, "SqueezeNet.png", show_shapes=True)
 
 model.compile(optimizer="adadelta", loss="categorical_crossentropy", metrics=["accuracy"])
