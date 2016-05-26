@@ -2,6 +2,7 @@ from keras.layers import Convolution2D, MaxPooling2D, AveragePooling2D
 from keras.layers import BatchNormalization, Flatten, Dense, Dropout
 from keras.layers import Input, merge
 from keras.models import Model
+from keras.utils.visualize_util import plot
 from keras import regularizers
 
 '''
@@ -286,4 +287,5 @@ preds = Dense(NB_CLASS, activation='softmax')(x)
 model = Model(input=img_input, output=[preds, aux_preds])
 model.summary()
 
+plot(model, to_file="Inception v3.png", show_shapes=True)
 #model.compile('rmsprop', 'categorical_crossentropy')
