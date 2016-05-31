@@ -18,7 +18,7 @@ Adapted for MNIST with "Transfer Learning"
 '''
 
 # global constants
-NB_CLASS = 10  # number of classes
+NB_CLASS = 1000  # number of classes
 DIM_ORDERING = 'th'  # 'th' (channels, width, height) or 'tf' (width, height, channels)
 WEIGHT_DECAY = 0.  # L2 regularization factor
 USE_BN = False  # whether to use batch normalization
