@@ -4,6 +4,7 @@ from keras.layers.core import Flatten, Dense, Dropout, Activation
 from keras.layers.convolutional import Convolution2D, MaxPooling2D, AveragePooling2D
 from keras.layers.normalization import BatchNormalization
 import keras.utils.np_utils as kutils
+import keras.callbacks as callbacks
 from keras.utils.visualize_util import plot, model_to_dot
 
 import MNIST.DataClean as dc
@@ -96,9 +97,9 @@ fire9_dropout = Dropout(0.5)(fire9)
 conv10 = Convolution2D(10, 1, 1, init='glorot_uniform',border_mode='valid')(fire9_dropout)
 
 #avgpool 1
-#avgpool10 = AveragePooling2D((13,13))(conv10)
+avgpool10 = AveragePooling2D((13,13), strides=(1,1), border_mode='same')(conv10)
 
-flatten = Flatten()(conv10)
+flatten = Flatten()(avgpool10)
 
 softmax = Dense(nb_classes, activation="softmax")(flatten)
 
@@ -107,15 +108,12 @@ model = Model(input=input_layer, output=softmax)
 model.summary()
 plot(model, "SqueezeNet.png", show_shapes=True)
 
-model.compile(optimizer="adadelta", loss="categorical_crossentropy", metrics=["accuracy"])
+model.compile(optimizer='adadelta', loss="categorical_crossentropy", metrics=["accuracy"])
 
-#model.load_weights("SqueezeNet Weights.h5")
+model.load_weights("SqueezeNet Weights.h5")
 print("Model loaded")
 
 model.fit(trainX,trainY, batch_size=batch_size, nb_epoch=nb_epoch)
-
-model.save_weights("SqueezeNet Weights.h5", overwrite=True)
-print("Model saved.")
 
 testData = dc.convertPandasDataFrameToNumpyArray(dc.loadTestData())
 testX = testData.reshape(testData.shape[0], 1, 28, 28)
